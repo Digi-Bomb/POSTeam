@@ -1,10 +1,10 @@
 from flask import Flask, send_from_directory, jsonify
-import psycopg2  # Only needed if connecting to PostgreSQL, optional for now
+import psycopg2  # Only needed if connecting to PostgreSQL
 import os
 
 app = Flask(__name__, static_folder='/app/build/web',static_url_path='')
 
-# 👉 Serve Flutter frontend
+# Serve Flutter frontend
 @app.route('/')
 def serve_index():
     print("🚀 Reached serve_index() route!")
@@ -24,12 +24,12 @@ def serve_index():
 def serve_static(path):
     return send_from_directory('build/web', path)
 
-# 👉 Backend endpoint to test DB connection
+# test link to access database
 @app.route('/health')
 def health():
     try:
-       # --- Optional: real DB test ---
-        # Example if DB team uses PostgreSQL:
+     
+        # Database test:
         conn = psycopg2.connect(
             host="10.172.55.12",  # DB team's IP
             port=5432,
