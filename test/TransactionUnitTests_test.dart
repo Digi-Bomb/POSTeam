@@ -17,6 +17,23 @@ void main() {
       expect(receipt.contains("Discount: 15%"), isTrue);
       expect(receipt.contains("Access Granted: Yes"), isTrue);
       expect(receipt.contains("Timestamp: 2025-10-13 18:00"), isTrue);
+     });
+
+    test('constructor correctly assigns all fields', () {
+      // Create a transaction object
+      final transaction = TransactionRecorded(101,500,12,49.99,9001,3,"2025-10-13 18:00","15%","Credit Card",true);
+
+      // Assert — check that all fields are correctly assigned
+      expect(transaction.transactionID, 101);
+      expect(transaction.customerID, 500);
+      expect(transaction.staffID, 12);
+      expect(transaction.totalCost, 49.99);
+      expect(transaction.ticketID, 9001);
+      expect(transaction.items, 3);
+      expect(transaction.timestamp, "2025-10-13 18:00");
+      expect(transaction.discount, "15%");
+      expect(transaction.paymentMethod, "Credit Card");
+      expect(transaction.accessGranted, true);
     });
   });
 }
