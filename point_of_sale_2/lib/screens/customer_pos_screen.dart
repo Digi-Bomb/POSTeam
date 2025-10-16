@@ -11,8 +11,11 @@ class _CustomerPOSScreenState extends State<CustomerPOSScreen> {
   int quantity = 1;
   String? ticketType;
   String? tokenBundle;
-
   final TextEditingController _nameController = TextEditingController();
+
+  // Cart data stored here
+  List<Map<String, dynamic>> cartItems = [];
+  double totalPrice = 0.0;
 
   @override
   Widget build(BuildContext context) {
@@ -46,19 +49,20 @@ class _CustomerPOSScreenState extends State<CustomerPOSScreen> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        // TODO: Navigate back to login page later
+                      },
                       child: const Text(
                         "Back to Login",
                         style: TextStyle(color: Colors.white, fontSize: 14),
                       ),
                     ),
                     const SizedBox(width: 10),
-                    // Simple placeholder for logo
                     CircleAvatar(
-                      backgroundColor: Colors.green.shade300,
+                      backgroundColor: Colors.purpleAccent,
                       radius: 25,
                       child: const Icon(Icons.pets,
-                          color: Colors.black, size: 28),
+                          color: Colors.white, size: 28),
                     ),
                   ],
                 ),
@@ -172,7 +176,25 @@ class _CustomerPOSScreenState extends State<CustomerPOSScreen> {
                             children: [
                               Expanded(
                                 child: ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    if (ticketType != null ||
+                                        tokenBundle != null) {
+                                      setState(() {
+                                        final selectedItem = {
+                                          'name': ticketType ?? tokenBundle,
+                                          'quantity': quantity,
+                                          'price': _calculatePrice(
+                                              ticketType ?? tokenBundle,
+                                              quantity),
+                                        };
+                                        cartItems.add(selectedItem);
+                                        totalPrice = cartItems.fold(
+                                            0.0,
+                                            (sum, item) =>
+                                                sum + item['price']);
+                                      });
+                                    }
+                                  },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.purpleAccent,
                                     padding: const EdgeInsets.symmetric(
@@ -231,41 +253,82 @@ class _CustomerPOSScreenState extends State<CustomerPOSScreen> {
                     flex: 1,
                     child: Column(
                       children: [
-                        Container(
-                          padding: const EdgeInsets.all(25),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF2C1155),
-                            borderRadius: BorderRadius.circular(15),
-                            border:
-                                Border.all(color: Colors.purple.shade200),
-                          ),
-                          child: Column(
-                            children: const [
-                              Row(
-                                children: [
-                                  Icon(Icons.shopping_cart_outlined,
-                                      color: Colors.white),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    "Cart Preview",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.all(25),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF2C1155),
+                              borderRadius: BorderRadius.circular(15),
+                              border:
+                                  Border.all(color: Colors.purple.shade200),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Row(
+                                  children: [
+                                    Icon(Icons.shopping_cart_outlined,
+                                        color: Colors.white),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      "Cart Preview",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 40),
-                              Icon(Icons.shopping_cart,
-                                  color: Colors.purpleAccent, size: 60),
-                              SizedBox(height: 10),
-                              Text(
-                                "Your Cart is Empty",
-                                style: TextStyle(
-                                    color: Colors.grey, fontSize: 16),
-                              ),
-                            ],
+                                  ],
+                                ),
+                                const SizedBox(height: 20),
+
+                                // 🛒 Dynamic cart display
+                                Expanded(
+                                  child: cartItems.isEmpty
+                                      ? const Center(
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(Icons.shopping_cart,
+                                                  color: Colors.purpleAccent,
+                                                  size: 60),
+                                              SizedBox(height: 10),
+                                              Text("Your Cart is Empty",
+                                                  style: TextStyle(
+                                                      color: Colors.grey,
+                                                      fontSize: 16)),
+                                            ],
+                                          ),
+                                        )
+                                      : ListView.builder(
+                                          itemCount: cartItems.length,
+                                          itemBuilder: (context, index) {
+                                            final item = cartItems[index];
+                                            return ListTile(
+                                              title: Text(item['name'],
+                                                  style: const TextStyle(
+                                                      color: Colors.white)),
+                                              subtitle: Text(
+                                                  "Qty: ${item['quantity']} | \$${item['price'].toStringAsFixed(2)}",
+                                                  style: const TextStyle(
+                                                      color: Colors.white70)),
+                                              trailing: IconButton(
+                                                icon: const Icon(Icons.delete,
+                                                    color: Colors.redAccent),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    totalPrice -=
+                                                        item['price'];
+                                                    cartItems.removeAt(index);
+                                                  });
+                                                },
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -278,19 +341,21 @@ class _CustomerPOSScreenState extends State<CustomerPOSScreen> {
                             border:
                                 Border.all(color: Colors.purple.shade200),
                           ),
-                          child: const Column(
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Price Per Unit:    \$0.00",
-                                style: TextStyle(
+                                "Items in Cart: ${cartItems.length}",
+                                style: const TextStyle(
                                     color: Colors.white, fontSize: 16),
                               ),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               Text(
-                                "Total:                    \$0.00",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 16),
+                                "Total: \$${totalPrice.toStringAsFixed(2)}",
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
@@ -307,6 +372,7 @@ class _CustomerPOSScreenState extends State<CustomerPOSScreen> {
     );
   }
 
+  // Helper Widgets and Methods
   Widget _buildTextField(
       String label, String hint, TextEditingController controller) {
     return Column(
@@ -397,5 +463,24 @@ class _CustomerPOSScreenState extends State<CustomerPOSScreen> {
         ),
       ),
     );
+  }
+
+  double _calculatePrice(String? item, int qty) {
+    switch (item) {
+      case "Basic Ticket":
+        return 5.0 * qty;
+      case "Premium Ticket":
+        return 10.0 * qty;
+      case "VIP Ticket":
+        return 20.0 * qty;
+      case "Small Token Bundle":
+        return 8.0 * qty;
+      case "Medium Token Bundle":
+        return 15.0 * qty;
+      case "Large Token Bundle":
+        return 25.0 * qty;
+      default:
+        return 0.0;
+    }
   }
 }
