@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'staff_pos_screen.dart';
 
 class StaffLoginScreen extends StatefulWidget {
   const StaffLoginScreen({super.key});
@@ -15,9 +16,10 @@ class _StaffLoginScreenState extends State<StaffLoginScreen> {
   void _validateLogin() {
     if (_usernameController.text == "staff" &&
         _passwordController.text == "1234") {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Login successful!")),
-      );
+      Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) => const StaffPOSScreen()),
+  );
       // TODO: Navigate to staff POS screen later
     } else {
       setState(() => _isValid = false);
