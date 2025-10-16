@@ -1,0 +1,401 @@
+import 'package:flutter/material.dart';
+
+class CustomerPOSScreen extends StatefulWidget {
+  const CustomerPOSScreen({super.key});
+
+  @override
+  State<CustomerPOSScreen> createState() => _CustomerPOSScreenState();
+}
+
+class _CustomerPOSScreenState extends State<CustomerPOSScreen> {
+  int quantity = 1;
+  String? ticketType;
+  String? tokenBundle;
+
+  final TextEditingController _nameController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF1A082F), // dark purple background
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 40),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header Row (Top bar)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Customer POS",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Row(
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      onPressed: () {},
+                      child: const Text(
+                        "Back to Login",
+                        style: TextStyle(color: Colors.white, fontSize: 14),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    // Simple placeholder for logo
+                    CircleAvatar(
+                      backgroundColor: Colors.green.shade300,
+                      radius: 25,
+                      child: const Icon(Icons.pets,
+                          color: Colors.black, size: 28),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 10),
+            const Text(
+              "Place your arcade order",
+              style: TextStyle(
+                color: Colors.purpleAccent,
+                fontSize: 18,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+
+            const SizedBox(height: 40),
+
+            // Main content row (Left: form, Right: cart)
+            Expanded(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // LEFT PANEL - Order Details
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      padding: const EdgeInsets.all(25),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2C1155),
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(color: Colors.purple.shade200),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Order Details",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+
+                          _buildTextField("Customer Name", "Enter your name",
+                              _nameController),
+
+                          const SizedBox(height: 15),
+                          _buildDropdown(
+                            label: "Ticket Type",
+                            value: ticketType,
+                            items: const [
+                              "Basic Ticket",
+                              "Premium Ticket",
+                              "VIP Ticket"
+                            ],
+                            onChanged: (val) =>
+                                setState(() => ticketType = val),
+                          ),
+
+                          const SizedBox(height: 15),
+                          _buildDropdown(
+                            label: "Token Bundle",
+                            value: tokenBundle,
+                            items: const [
+                              "Small Token Bundle",
+                              "Medium Token Bundle",
+                              "Large Token Bundle"
+                            ],
+                            onChanged: (val) =>
+                                setState(() => tokenBundle = val),
+                          ),
+
+                          const SizedBox(height: 15),
+                          const Text(
+                            "Quantity",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            children: [
+                              _quantityButton("-", () {
+                                if (quantity > 1) setState(() => quantity--);
+                              }),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 8),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: Colors.purple.shade300),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  "$quantity",
+                                  style: const TextStyle(
+                                      color: Colors.white, fontSize: 16),
+                                ),
+                              ),
+                              _quantityButton("+", () {
+                                setState(() => quantity++);
+                              }),
+                            ],
+                          ),
+
+                          const SizedBox(height: 30),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () {},
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.purpleAccent,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                  ),
+                                  child: const Text(
+                                    "Add to Cart",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 15),
+                              Expanded(
+                                child: OutlinedButton(
+                                  onPressed: () {
+                                    _nameController.clear();
+                                    setState(() {
+                                      ticketType = null;
+                                      tokenBundle = null;
+                                      quantity = 1;
+                                    });
+                                  },
+                                  style: OutlinedButton.styleFrom(
+                                    side: const BorderSide(
+                                        color: Colors.purpleAccent),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                  ),
+                                  child: const Text(
+                                    "Clear Selection",
+                                    style: TextStyle(
+                                        color: Colors.purpleAccent,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(width: 30),
+
+                  // RIGHT PANEL - Cart Preview
+                  Expanded(
+                    flex: 1,
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(25),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF2C1155),
+                            borderRadius: BorderRadius.circular(15),
+                            border:
+                                Border.all(color: Colors.purple.shade200),
+                          ),
+                          child: Column(
+                            children: const [
+                              Row(
+                                children: [
+                                  Icon(Icons.shopping_cart_outlined,
+                                      color: Colors.white),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    "Cart Preview",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 40),
+                              Icon(Icons.shopping_cart,
+                                  color: Colors.purpleAccent, size: 60),
+                              SizedBox(height: 10),
+                              Text(
+                                "Your Cart is Empty",
+                                style: TextStyle(
+                                    color: Colors.grey, fontSize: 16),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(25),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF2C1155),
+                            borderRadius: BorderRadius.circular(15),
+                            border:
+                                Border.all(color: Colors.purple.shade200),
+                          ),
+                          child: const Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Price Per Unit:    \$0.00",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16),
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                "Total:                    \$0.00",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(
+      String label, String hint, TextEditingController controller) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label,
+            style: const TextStyle(color: Colors.white, fontSize: 16)),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          style: const TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: const TextStyle(color: Colors.white54),
+            filled: true,
+            fillColor: const Color(0xFF140634),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide:
+                  BorderSide(color: Colors.purple.shade200, width: 1.0),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide:
+                  BorderSide(color: Colors.purpleAccent, width: 1.2),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDropdown({
+    required String label,
+    required String? value,
+    required List<String> items,
+    required ValueChanged<String?> onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label,
+            style: const TextStyle(color: Colors.white, fontSize: 16)),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<String>(
+          value: value,
+          dropdownColor: const Color(0xFF1A082F),
+          items: items
+              .map((item) =>
+                  DropdownMenuItem(value: item, child: Text(item)))
+              .toList(),
+          onChanged: onChanged,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: const Color(0xFF140634),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide:
+                  BorderSide(color: Colors.purple.shade200, width: 1.0),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide:
+                  BorderSide(color: Colors.purpleAccent, width: 1.2),
+            ),
+          ),
+          style: const TextStyle(color: Colors.white),
+        ),
+      ],
+    );
+  }
+
+  Widget _quantityButton(String text, VoidCallback onTap) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 5),
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.purpleAccent),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          child: Text(
+            text,
+            style: const TextStyle(color: Colors.white, fontSize: 18),
+          ),
+        ),
+      ),
+    );
+  }
+}

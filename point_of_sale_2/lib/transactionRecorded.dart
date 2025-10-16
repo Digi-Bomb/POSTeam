@@ -42,7 +42,7 @@ Customer ID: $customerID
 Staff ID: $staffID
 Ticket ID: $ticketID
 Items: $items
-Total Cost: $${totalCost.toStringAsFixed(2)}
+Total Cost: ${totalCost.toStringAsFixed(2)}
 Discount: $discount
 Payment Method: $paymentMethod
 Access Granted: ${accessGranted ? "Yes" : "No"}
