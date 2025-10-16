@@ -1,0 +1,13 @@
+services:
+  payment:
+    build: .
+    container_name: payment_api
+    environment:
+      PORT: "12501"
+      FLASK_ENV: development
+      SKIP_DB: "1"
+    ports:
+      - "12501:12501"
+    volumes:
+      - ./app:/app/app
+    restart: unless-stopped
