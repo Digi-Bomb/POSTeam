@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart'; //http request
 import 'dart:developer';
 
 void main() {  
@@ -8,17 +8,20 @@ void main() {
 
 class TransactionRecorded {
   //attributes
-  int transactionID = 0;
-  int customerID = 0;
-  int staffID = 0;
+  int transactionID = 0; // not needed
+  int customerID = 0; //???
+  int staffID = 0; //???
   double totalCost = 0;
-  int ticketID = 0; 
-  int items = 0; //this could be many different things, int, string, list of ints, list of strings etc
-  String timestamp = "";
-  String discount = "0%"; //whatever the discount just make the string that number, ex "33%"
-  String paymentMethod = "";
+  int ticketID = 0; //details
+  int items = 0; //details - list
+  String timestamp = ""; //not needed
+  String discount = "0%"; //details
+  String paymentMethod = ""; //details
   bool accessGranted = false; //can they play the games
 
+  //what i send to the database isnt about the transaction itself but about the customer
+
+  //send it so its parsable - "customerID || staffID || ticketID || ....."
   // var tokenBundle - how many tokens/credits
   // var deliveryMethod - how they recieve their reward
 
