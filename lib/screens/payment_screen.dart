@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'ticket_screen.dart';
-import 'customer_pos_screen.dart';
 
 class PaymentScreen extends StatefulWidget {
   final double totalAmount;
@@ -68,7 +67,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 decoration: BoxDecoration(
                   color: const Color(0xFF1A082F),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.purpleAccent.withOpacity(0.4)),
+                  border: Border.all(
+                    color: Colors.purpleAccent.withOpacity(0.4),
+                  ),
                 ),
                 child: Column(
                   children: [
@@ -78,11 +79,17 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         children: [
                           Text(
                             item['name'],
-                            style: const TextStyle(color: Colors.white, fontSize: 14),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
                           ),
                           Text(
                             "x${item['quantity']} \$${item['price'].toStringAsFixed(2)}",
-                            style: const TextStyle(color: Colors.white70, fontSize: 14),
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14,
+                            ),
                           ),
                         ],
                       );
@@ -106,7 +113,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "Select Payment Method:",
-                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
@@ -126,23 +137,22 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       : () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text("Payment Successful via $selectedPayment"),
-                              
+                              content: Text(
+                                "Payment Successful via $selectedPayment",
+                              ),
                             ),
-                            
                           );
 
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => TicketScreen(
-                          customerName: widget.customerName,  // ✅ correct variable
-                          totalAmount: widget.totalAmount,
-                        ),
-                      ),
-                    );
-
-
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => TicketScreen(
+                                customerName:
+                                    widget.customerName, // ✅ correct variable
+                                totalAmount: widget.totalAmount,
+                              ),
+                            ),
+                          );
                         },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.purpleAccent,
@@ -154,7 +164,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   ),
                   child: const Text(
                     "Confirm Payment",
-                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),

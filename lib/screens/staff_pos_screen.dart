@@ -14,22 +14,22 @@ class _StaffPOSScreenState extends State<StaffPOSScreen> {
       "order": "Basic Ticket x2",
       "payment": "Pending",
       "total": 20.00,
-      "datetime": "2025-01-10 11:45 AM"
+      "datetime": "2025-01-10 11:45 AM",
     },
     {
       "customerName": "Bob",
       "order": "VIP Ticket x1 + Tokens",
       "payment": "Completed",
       "total": 45.00,
-      "datetime": "2025-01-10 10:10 AM"
+      "datetime": "2025-01-10 10:10 AM",
     },
     {
       "customerName": "John",
       "order": "Family Pass x1",
       "payment": "Completed",
       "total": 60.00,
-      "datetime": "2025-01-09 04:55 PM"
-    }
+      "datetime": "2025-01-09 04:55 PM",
+    },
   ];
 
   Map<String, dynamic>? selectedOrder;
@@ -54,10 +54,7 @@ class _StaffPOSScreenState extends State<StaffPOSScreen> {
       ),
       body: Row(
         children: [
-          Expanded(
-            flex: 2,
-            child: _buildOrderHistory(),
-          ),
+          Expanded(flex: 2, child: _buildOrderHistory()),
           AnimatedContainer(
             duration: const Duration(milliseconds: 250),
             width: showSidePanel ? 380 : 0,
@@ -109,7 +106,9 @@ class _StaffPOSScreenState extends State<StaffPOSScreen> {
                       ),
                       trailing: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: txn["payment"] == "Completed"
                               ? Colors.green
@@ -163,7 +162,7 @@ class _StaffPOSScreenState extends State<StaffPOSScreen> {
               IconButton(
                 icon: const Icon(Icons.close, color: Colors.white),
                 onPressed: () => setState(() => showSidePanel = false),
-              )
+              ),
             ],
           ),
 
@@ -180,14 +179,22 @@ class _StaffPOSScreenState extends State<StaffPOSScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Customer: ${selectedOrder!["customerName"]}",
-            style: const TextStyle(color: Colors.white)),
-        Text("Order: ${selectedOrder!["order"]}",
-            style: const TextStyle(color: Colors.white)),
-        Text("Total: \$${selectedOrder!["total"].toStringAsFixed(2)}",
-            style: const TextStyle(color: Colors.white)),
-        Text("Date: ${selectedOrder!["datetime"]}",
-            style: const TextStyle(color: Colors.white)),
+        Text(
+          "Customer: ${selectedOrder!["customerName"]}",
+          style: const TextStyle(color: Colors.white),
+        ),
+        Text(
+          "Order: ${selectedOrder!["order"]}",
+          style: const TextStyle(color: Colors.white),
+        ),
+        Text(
+          "Total: \$${selectedOrder!["total"].toStringAsFixed(2)}",
+          style: const TextStyle(color: Colors.white),
+        ),
+        Text(
+          "Date: ${selectedOrder!["datetime"]}",
+          style: const TextStyle(color: Colors.white),
+        ),
         const Divider(color: Colors.purpleAccent),
       ],
     );
@@ -198,18 +205,19 @@ class _StaffPOSScreenState extends State<StaffPOSScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("Select Payment Method",
-              style: TextStyle(color: Colors.white, fontSize: 14)),
+          const Text(
+            "Select Payment Method",
+            style: TextStyle(color: Colors.white, fontSize: 14),
+          ),
 
           const SizedBox(height: 6),
           DropdownButtonFormField<String>(
-            value: paymentMethod,
+            initialValue: paymentMethod,
             dropdownColor: const Color(0xFF1A082F),
             items: const [
               DropdownMenuItem(value: "Cash", child: Text("Cash")),
               DropdownMenuItem(value: "Card", child: Text("Card")),
-              DropdownMenuItem(
-                  value: "Wallet", child: Text("Digital Wallet")),
+              DropdownMenuItem(value: "Wallet", child: Text("Digital Wallet")),
             ],
             onChanged: (val) => setState(() => paymentMethod = val),
             decoration: _inputDecoration(),
@@ -217,8 +225,10 @@ class _StaffPOSScreenState extends State<StaffPOSScreen> {
           ),
 
           const SizedBox(height: 15),
-          const Text("Discount (%)",
-              style: TextStyle(color: Colors.white, fontSize: 14)),
+          const Text(
+            "Discount (%)",
+            style: TextStyle(color: Colors.white, fontSize: 14),
+          ),
           const SizedBox(height: 6),
           TextFormField(
             controller: discountController,
@@ -234,9 +244,11 @@ class _StaffPOSScreenState extends State<StaffPOSScreen> {
               backgroundColor: Colors.purpleAccent,
               minimumSize: const Size(double.infinity, 48),
             ),
-            child: const Text("Complete Payment",
-                style: TextStyle(color: Colors.white, fontSize: 16)),
-          )
+            child: const Text(
+              "Complete Payment",
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+          ),
         ],
       ),
     );
@@ -250,9 +262,9 @@ class _StaffPOSScreenState extends State<StaffPOSScreen> {
       showSidePanel = false;
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Payment completed successfully")),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text("Payment completed successfully")));
   }
 
   Widget _buildTicketView() {

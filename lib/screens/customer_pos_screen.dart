@@ -46,15 +46,20 @@ class _CustomerPOSScreenState extends State<CustomerPOSScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10),
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
                       ),
                       onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                         MaterialPageRoute(builder: (context) => const POSApp()));
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const POSApp(),
+                          ),
+                        );
                       },
                       child: const Text(
                         "Back to Login",
@@ -65,8 +70,11 @@ class _CustomerPOSScreenState extends State<CustomerPOSScreen> {
                     CircleAvatar(
                       backgroundColor: Colors.purpleAccent,
                       radius: 25,
-                      child: const Icon(Icons.pets,
-                          color: Colors.white, size: 28),
+                      child: const Icon(
+                        Icons.pets,
+                        color: Colors.white,
+                        size: 28,
+                      ),
                     ),
                   ],
                 ),
@@ -113,8 +121,11 @@ class _CustomerPOSScreenState extends State<CustomerPOSScreen> {
                           ),
                           const SizedBox(height: 20),
 
-                          _buildTextField("Customer Name", "Enter your name",
-                              _nameController),
+                          _buildTextField(
+                            "Customer Name",
+                            "Enter your name",
+                            _nameController,
+                          ),
 
                           const SizedBox(height: 15),
                           _buildDropdown(
@@ -123,7 +134,7 @@ class _CustomerPOSScreenState extends State<CustomerPOSScreen> {
                             items: const [
                               "Basic Ticket",
                               "Premium Ticket",
-                              "VIP Ticket"
+                              "VIP Ticket",
                             ],
                             onChanged: (val) =>
                                 setState(() => ticketType = val),
@@ -136,7 +147,7 @@ class _CustomerPOSScreenState extends State<CustomerPOSScreen> {
                             items: const [
                               "Small Token Bundle",
                               "Medium Token Bundle",
-                              "Large Token Bundle"
+                              "Large Token Bundle",
                             ],
                             onChanged: (val) =>
                                 setState(() => tokenBundle = val),
@@ -146,8 +157,9 @@ class _CustomerPOSScreenState extends State<CustomerPOSScreen> {
                           const Text(
                             "Quantity",
                             style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600),
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                           const SizedBox(height: 10),
                           Row(
@@ -157,16 +169,21 @@ class _CustomerPOSScreenState extends State<CustomerPOSScreen> {
                               }),
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 8),
+                                  horizontal: 20,
+                                  vertical: 8,
+                                ),
                                 decoration: BoxDecoration(
                                   border: Border.all(
-                                      color: Colors.purple.shade300),
+                                    color: Colors.purple.shade300,
+                                  ),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
                                   "$quantity",
                                   style: const TextStyle(
-                                      color: Colors.white, fontSize: 16),
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                  ),
                                 ),
                               ),
                               _quantityButton("+", () {
@@ -188,30 +205,33 @@ class _CustomerPOSScreenState extends State<CustomerPOSScreen> {
                                           'name': ticketType ?? tokenBundle,
                                           'quantity': quantity,
                                           'price': _calculatePrice(
-                                              ticketType ?? tokenBundle,
-                                              quantity),
+                                            ticketType ?? tokenBundle,
+                                            quantity,
+                                          ),
                                         };
                                         cartItems.add(selectedItem);
                                         totalPrice = cartItems.fold(
-                                            0.0,
-                                            (sum, item) =>
-                                                sum + item['price']);
+                                          0.0,
+                                          (sum, item) => sum + item['price'],
+                                        );
                                       });
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.purpleAccent,
                                     padding: const EdgeInsets.symmetric(
-                                        vertical: 16),
+                                      vertical: 16,
+                                    ),
                                     shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
                                   ),
                                   child: const Text(
                                     "Add to Cart",
                                     style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600),
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -228,18 +248,21 @@ class _CustomerPOSScreenState extends State<CustomerPOSScreen> {
                                   },
                                   style: OutlinedButton.styleFrom(
                                     side: const BorderSide(
-                                        color: Colors.purpleAccent),
+                                      color: Colors.purpleAccent,
+                                    ),
                                     padding: const EdgeInsets.symmetric(
-                                        vertical: 16),
+                                      vertical: 16,
+                                    ),
                                     shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
                                   ),
                                   child: const Text(
                                     "Clear Selection",
                                     style: TextStyle(
-                                        color: Colors.purpleAccent,
-                                        fontWeight: FontWeight.w600),
+                                      color: Colors.purpleAccent,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -263,16 +286,17 @@ class _CustomerPOSScreenState extends State<CustomerPOSScreen> {
                             decoration: BoxDecoration(
                               color: const Color(0xFF2C1155),
                               borderRadius: BorderRadius.circular(15),
-                              border:
-                                  Border.all(color: Colors.purple.shade200),
+                              border: Border.all(color: Colors.purple.shade200),
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Row(
                                   children: [
-                                    Icon(Icons.shopping_cart_outlined,
-                                        color: Colors.white),
+                                    Icon(
+                                      Icons.shopping_cart_outlined,
+                                      color: Colors.white,
+                                    ),
                                     SizedBox(width: 8),
                                     Text(
                                       "Cart Preview",
@@ -293,14 +317,19 @@ class _CustomerPOSScreenState extends State<CustomerPOSScreen> {
                                           child: Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              Icon(Icons.shopping_cart,
-                                                  color: Colors.purpleAccent,
-                                                  size: 60),
+                                              Icon(
+                                                Icons.shopping_cart,
+                                                color: Colors.purpleAccent,
+                                                size: 60,
+                                              ),
                                               SizedBox(height: 10),
-                                              Text("Your Cart is Empty",
-                                                  style: TextStyle(
-                                                      color: Colors.grey,
-                                                      fontSize: 16)),
+                                              Text(
+                                                "Your Cart is Empty",
+                                                style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
                                             ],
                                           ),
                                         )
@@ -309,20 +338,26 @@ class _CustomerPOSScreenState extends State<CustomerPOSScreen> {
                                           itemBuilder: (context, index) {
                                             final item = cartItems[index];
                                             return ListTile(
-                                              title: Text(item['name'],
-                                                  style: const TextStyle(
-                                                      color: Colors.white)),
+                                              title: Text(
+                                                item['name'],
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                ),
+                                              ),
                                               subtitle: Text(
-                                                  "Qty: ${item['quantity']} | \$${item['price'].toStringAsFixed(2)}",
-                                                  style: const TextStyle(
-                                                      color: Colors.white70)),
+                                                "Qty: ${item['quantity']} | \$${item['price'].toStringAsFixed(2)}",
+                                                style: const TextStyle(
+                                                  color: Colors.white70,
+                                                ),
+                                              ),
                                               trailing: IconButton(
-                                                icon: const Icon(Icons.delete,
-                                                    color: Colors.redAccent),
+                                                icon: const Icon(
+                                                  Icons.delete,
+                                                  color: Colors.redAccent,
+                                                ),
                                                 onPressed: () {
                                                   setState(() {
-                                                    totalPrice -=
-                                                        item['price'];
+                                                    totalPrice -= item['price'];
                                                     cartItems.removeAt(index);
                                                   });
                                                 },
@@ -336,84 +371,83 @@ class _CustomerPOSScreenState extends State<CustomerPOSScreen> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                       Container(
-  width: double.infinity,
-  padding: const EdgeInsets.all(25),
-  decoration: BoxDecoration(
-    color: const Color(0xFF2C1155),
-    borderRadius: BorderRadius.circular(15),
-    border: Border.all(color: Colors.purple.shade200),
-  ),
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        "Items in Cart: ${cartItems.length}",
-        style: const TextStyle(color: Colors.white, fontSize: 16),
-      ),
-      SizedBox(height: 10),
-      Text(
-        "Total: \$${totalPrice.toStringAsFixed(2)}",
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    ],
-  ),
-),
-const SizedBox(height: 15),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(25),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF2C1155),
+                            borderRadius: BorderRadius.circular(15),
+                            border: Border.all(color: Colors.purple.shade200),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Items in Cart: ${cartItems.length}",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                "Total: \$${totalPrice.toStringAsFixed(2)}",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 15),
 
-SizedBox(
-  width: double.infinity,
-  child: ElevatedButton.icon(
-    onPressed: () {
-      if (cartItems.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Cart is empty. Add items before payment."),
-          ),
-        );
-        return;
-      }
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              if (cartItems.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      "Cart is empty. Add items before payment.",
+                                    ),
+                                  ),
+                                );
+                                return;
+                              }
 
-     Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) => PaymentScreen(
-      totalAmount: totalPrice,
-      customerName: _nameController.text,
-      cartItems: cartItems,
-    ),
-  ),
-);
-
-    },
-    icon: const Icon(Icons.payment),
-    label: const Text(
-      "Proceed to Payment",
-      style: TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 16,
-      ),
-    ),
-    style: ElevatedButton.styleFrom(
-      backgroundColor: Colors.greenAccent,
-      foregroundColor: Colors.black,
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-    ),
-  ),
-),
-
-                      
-                        
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PaymentScreen(
+                                    totalAmount: totalPrice,
+                                    customerName: _nameController.text,
+                                    cartItems: cartItems,
+                                  ),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.payment),
+                            label: const Text(
+                              "Proceed to Payment",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.greenAccent,
+                              foregroundColor: Colors.black,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
-
-                      
                     ),
                   ),
                 ],
@@ -427,12 +461,14 @@ SizedBox(
 
   // Helper Widgets and Methods
   Widget _buildTextField(
-      String label, String hint, TextEditingController controller) {
+    String label,
+    String hint,
+    TextEditingController controller,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: const TextStyle(color: Colors.white, fontSize: 16)),
+        Text(label, style: const TextStyle(color: Colors.white, fontSize: 16)),
         const SizedBox(height: 8),
         TextField(
           controller: controller,
@@ -444,13 +480,11 @@ SizedBox(
             fillColor: const Color(0xFF140634),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide:
-                  BorderSide(color: Colors.purple.shade200, width: 1.0),
+              borderSide: BorderSide(color: Colors.purple.shade200, width: 1.0),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide:
-                  BorderSide(color: Colors.purpleAccent, width: 1.2),
+              borderSide: BorderSide(color: Colors.purpleAccent, width: 1.2),
             ),
           ),
         ),
@@ -467,15 +501,13 @@ SizedBox(
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: const TextStyle(color: Colors.white, fontSize: 16)),
+        Text(label, style: const TextStyle(color: Colors.white, fontSize: 16)),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: value,
+          initialValue: value,
           dropdownColor: const Color(0xFF1A082F),
           items: items
-              .map((item) =>
-                  DropdownMenuItem(value: item, child: Text(item)))
+              .map((item) => DropdownMenuItem(value: item, child: Text(item)))
               .toList(),
           onChanged: onChanged,
           decoration: InputDecoration(
@@ -483,13 +515,11 @@ SizedBox(
             fillColor: const Color(0xFF140634),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide:
-                  BorderSide(color: Colors.purple.shade200, width: 1.0),
+              borderSide: BorderSide(color: Colors.purple.shade200, width: 1.0),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide:
-                  BorderSide(color: Colors.purpleAccent, width: 1.2),
+              borderSide: BorderSide(color: Colors.purpleAccent, width: 1.2),
             ),
           ),
           style: const TextStyle(color: Colors.white),
