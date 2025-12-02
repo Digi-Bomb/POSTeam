@@ -34,7 +34,7 @@ class TransactionRecorded {
     this.staffID = staffID;
     this.totalCost = totalCost;
     this.items = items;
-    timestamp = timeStamp;
+    this.timestamp = timeStamp;
     this.discount = discount;
     this.paymentMethod = paymentMethod;
     this.accessGranted = accessGranted;
