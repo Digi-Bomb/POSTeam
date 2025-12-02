@@ -31,7 +31,7 @@ RUN pip install flask psycopg2-binary
 EXPOSE 12500
 
 # Run Flask backend
-CMD ["python", "lib/databaseConnect.py"]
+# CMD ["python", "lib/databaseConnect.py"]
 
 
 
