@@ -1,37 +1,33 @@
-# Use Flutter image
-FROM ghcr.io/cirruslabs/flutter:stable
+# Stage 1: Build the Flutter web app
+FROM ghcr.io/cirruslabs/flutter:stable AS build
 
-# Install Python + system deps
-RUN apt-get update && apt-get install -y python3 python3-pip python3-venv
-
-# Create app directory
 WORKDIR /app
 
-# Copy project
-COPY . .
-
-# Enable Flutter web
-RUN flutter config --enable-web
-
-# Install Flutter dependencies
+# Copy pubspec and get dependencies first (for caching)
+COPY pubspec.* ./
 RUN flutter pub get
 
-# Create Python virtual environment
-RUN python3 -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
+# Copy the rest of the app
+COPY . .
 
-# Install Python packages
-RUN pip install --upgrade pip
-RUN pip install flask psycopg2-binary
+# Enable web support and ensure web platform exists
+RUN flutter config --enable-web
+RUN flutter create . --platforms web
 
-# Flutter dev server port
-EXPOSE 13000
-# Flask backend port
+# Build release web app
+RUN flutter build web --release
+
+# Stage 2: Serve with nginx
+FROM nginx:alpine
+
+# Copy built web app to nginx folder
+COPY --from=build /app/build/web /usr/share/nginx/html
+
+# Change Nginx to listen on port 12500
+RUN sed -i 's/listen       80;/listen 12500;/g' /etc/nginx/conf.d/default.conf
+
+# Expose port 12500 externally
 EXPOSE 12500
 
-# Copy startup script into container
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
-
-# Run both servers
-CMD ["/start.sh"]
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]
