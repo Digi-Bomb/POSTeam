@@ -1,0 +1,1 @@
+ C:\\Users\\blipp\\Documents\\GitHub\\POSTeam\\point_of_sale_2\\.dart_tool\\flutter_build\\22942ec93351bed4d8d1c9acf44b53b8\\native_assets.json: 
