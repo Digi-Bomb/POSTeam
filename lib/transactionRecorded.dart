@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class TransactionRecorded {
   //attributes
   int transactionID = 0;
