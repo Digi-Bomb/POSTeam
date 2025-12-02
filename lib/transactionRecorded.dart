@@ -1,19 +1,28 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart'; 
 import 'dart:developer';
+
+void main() {  
+ //just for a simple test 
+ TransactionRecorded transaction = TransactionRecorded(101, 500, 12, 49.99, 9001, 3, "2025-10-13 18:00", "15%", "Credit Card", true);
+ debugPrint(transaction.generateReceipt());
+}
 
 class TransactionRecorded {
   //attributes
-  int transactionID = 0;
-  int customerID = 0;
-  int staffID = 0;
+  int transactionID = 0; // not needed
+  int customerID = 0; //???
+  int staffID = 0; //???
   double totalCost = 0;
-  int ticketID = 0; 
-  int items = 0; //this could be many different things, int, string, list of ints, list of strings etc
-  String timestamp = "";
-  String discount = "0%"; //whatever the discount just make the string that number, ex "33%"
-  String paymentMethod = "";
+  int ticketID = 0; //details
+  int items = 0; //details - list
+  String timestamp = ""; //not needed
+  String discount = "0%"; //details
+  String paymentMethod = ""; //details
   bool accessGranted = false; //can they play the games
 
+  //what i send to the database isnt about the transaction itself but about the customer
+
+  //send it so its parsable - "customerID || staffID || ticketID || ....."
   // var tokenBundle - how many tokens/credits
   // var deliveryMethod - how they recieve their reward
 
@@ -23,6 +32,7 @@ TransactionRecorded(int transactionID, int customerID, int staffID, double total
   this.customerID = customerID;
   this.staffID = staffID;
   this.totalCost = totalCost;
+  this.ticketID = ticketID;
   this.items = items;
   this.timestamp = timeStamp;
   this.discount = discount;
@@ -30,6 +40,7 @@ TransactionRecorded(int transactionID, int customerID, int staffID, double total
   this.accessGranted = accessGranted;
 }
  
+
   //Functions
   // recieveData() // recieves data about the transaction and stores each piece in the appropriate variable
   // sendData() //send the data to the database or a different team
@@ -42,7 +53,7 @@ Customer ID: $customerID
 Staff ID: $staffID
 Ticket ID: $ticketID
 Items: $items
-Total Cost: ${totalCost.toStringAsFixed(2)}
+Total Cost: \$${totalCost.toStringAsFixed(2)}
 Discount: $discount
 Payment Method: $paymentMethod
 Access Granted: ${accessGranted ? "Yes" : "No"}
@@ -51,3 +62,5 @@ Timestamp: $timestamp
 ''';
   }
 }
+
+
