@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class TransactionRecorded {
   //attributes
   int transactionID = 0;
@@ -36,7 +34,7 @@ class TransactionRecorded {
     this.staffID = staffID;
     this.totalCost = totalCost;
     this.items = items;
-    this.timestamp = timeStamp;
+    timestamp = timeStamp;
     this.discount = discount;
     this.paymentMethod = paymentMethod;
     this.accessGranted = accessGranted;

@@ -1,37 +1,37 @@
-# Use the official Dart image with Flutter pre-installed
+# Use Flutter image
 FROM ghcr.io/cirruslabs/flutter:stable
 
-# Set working directory
-WORKDIR /app
-
-# Copy Flutter project files into container
-COPY . .
-
-RUN flutter create . --platforms web
-# Get dependencies
-RUN flutter pub get
-
-# Build the Flutter web app
-RUN flutter build web
-
-# Install Python and venv
+# Install Python + system deps
 RUN apt-get update && apt-get install -y python3 python3-pip python3-venv
 
-# Create virtual environment for Python
-RUN python3 -m venv /opt/venv
+# Create app directory
+WORKDIR /app
 
-# Ensure venv binaries are first in PATH
+# Copy project
+COPY . .
+
+# Enable Flutter web
+RUN flutter config --enable-web
+
+# Install Flutter dependencies
+RUN flutter pub get
+
+# Create Python virtual environment
+RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Upgrade pip in the venv and install Flask + psycopg2-binary there
+# Install Python packages
 RUN pip install --upgrade pip
 RUN pip install flask psycopg2-binary
 
-# Expose port
+# Flutter dev server port
+EXPOSE 13000
+# Flask backend port
 EXPOSE 12500
 
-# Run Flask backend
-CMD ["python", "lib/databaseConnect.py"]
+# Copy startup script into container
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
 
-
-
+# Run both servers
+CMD ["/start.sh"]
