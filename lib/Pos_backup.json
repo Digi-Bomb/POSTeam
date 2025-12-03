@@ -1,0 +1,135 @@
+
+{
+  "system_info": {
+    "module": "Point of Sale (POS)",
+    "version": "1.0.0",
+    "description": "Backup database for POS module including tickets, tokens, staff, orders, payments, and transactions",
+    "lastUpdated": "2025-02-20"
+  },
+
+  "tickets": [
+    { "id": "T1", "name": "Basic Ticket", "price": 5.00, "description": "General entry ticket" },
+    { "id": "T2", "name": "Premium Ticket", "price": 10.00, "description": "Entry + premium attractions" },
+    { "id": "T3", "name": "VIP Ticket", "price": 20.00, "description": "All-access VIP entry" }
+  ],
+
+  "token_bundles": [
+    { "id": "TB1", "name": "Small Token Bundle", "tokens": 10, "price": 8.00 },
+    { "id": "TB2", "name": "Medium Token Bundle", "tokens": 25, "price": 15.00 },
+    { "id": "TB3", "name": "Large Token Bundle", "tokens": 50, "price": 25.00 }
+  ],
+
+  "payment_methods": [
+    { "id": "PM1", "name": "Credit Card" },
+    { "id": "PM2", "name": "Debit Card" },
+    { "id": "PM3", "name": "Digital Wallet" },
+    { "id": "PM4", "name": "Cash" }
+  ],
+
+  "staff_credentials": [
+    {
+      "staffId": "S01",
+      "username": "Donab",
+      "password": "password123",
+      "role": "staff",
+      "name": "Dona Barot"
+    },
+    {
+      "staffId": "S02",
+      "username": "Amy",
+      "password": "Amypass",
+      "role": "staff",
+      "name": "Amy Fowler"
+    }
+  ],
+
+  "orders": [
+    {
+      "orderId": "O001",
+      "customerName": "John Doe",
+      "items": [
+        { "type": "ticket", "id": "T2", "name": "Premium Ticket", "qty": 2, "unitPrice": 10.0 }
+      ],
+      "totalPrice": 20.00,
+      "status": "pending",
+      "timestamp": "2025-02-20T15:30:00Z"
+    },
+    {
+      "orderId": "O002",
+      "customerName": "Jane Brown",
+      "items": [
+        { "type": "bundle", "id": "TB3", "name": "Large Token Bundle", "qty": 1, "unitPrice": 25.00 }
+      ],
+      "totalPrice": 25.00,
+      "status": "ready",
+      "timestamp": "2025-02-20T16:00:00Z"
+    }
+  ],
+
+  "transactions": [
+    {
+      "transactionId": "TX1001",
+      "orderId": "O001",
+      "customerName": "John Doe",
+      "amountPaid": 20.00,
+      "paymentMethod": "Credit Card",
+      "timestamp": "2025-02-20T15:31:00Z"
+    },
+    {
+      "transactionId": "TX1002",
+      "orderId": "O002",
+      "customerName": "Jane Brown",
+      "amountPaid": 25.00,
+      "paymentMethod": "Digital Wallet",
+      "timestamp": "2025-02-20T16:02:00Z"
+    }
+  ],
+
+  "api_schemas": {
+    "staff_login_request": {
+      "username": "string",
+      "password": "string"
+    },
+    "staff_login_response": {
+      "status": "success/failure",
+      "role": "staff"
+    },
+    "submit_order_request": {
+      "customerName": "string",
+      "items": [
+        {
+          "id": "string",
+          "type": "ticket/bundle",
+          "quantity": "number"
+        }
+      ]
+    },
+    "submit_order_response": {
+      "orderId": "string",
+      "status": "pending/processing/ready",
+      "totalPrice": "number"
+    }
+  },
+
+  "integration_endpoints": {
+    "facilities_team": {
+      "ticketPricing": "/facilities/tickets",
+      "tokenBundles": "/facilities/bundles"
+    },
+    "hr_team": {
+      "staffLogin": "/hr/validateStaffLogin"
+    },
+    "transactions_team": {
+      "recordPayment": "/transactions/record",
+      "getReceipt": "/transactions/receipt"
+    },
+    "menu_team": {
+      "menuItems": "/menu/items"
+    },
+    "database_team": {
+      "storeOrder": "/database/orders",
+      "getTickets": "/database/tickets",
+      "getBundles": "/database/tokenBundles"
+    }
+  }
+}
