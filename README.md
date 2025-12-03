@@ -1,4 +1,17 @@
-<<<<<<< HEAD
+# POS Calculator Module
+
+Core calculation service for Point of Sale system.
+
+## Features
+- Order total calculation
+- Discount application
+- Payment validation
+- REST API endpoints
+
+## Development
+```bash
+pip install -r requirements.txt
+python src/app.py
 # point_of_sale_2
 
 A new Flutter project.
@@ -15,7 +28,6 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
-=======
 INSTALLING FLUTTER:
 https://docs.flutter.dev/install/manual
 
@@ -28,9 +40,3 @@ ONCE EXTRACTED, HOW TO ADD TO PATH VARIABLES:
 https://www.wikihow.com/Change-the-PATH-Environment-Variable-on-Windows
 (once downloaded, in vscode should now have sdk inside of the vscode and be able to "create flutter proj") (don't actually create flutter project, this is just a litmus test)
 
-In the bottom righthand corner of vs code, there should be a small box to click to "Select Device"
-If you are not running the webapp in chrome, run manually in a terminal opened through VSCode with: 
-flutter run -d web-server 
-
-This should give you a link that was opened to connect to the application for debugging purposes, otherwise, connect through the open container to run without developing/debugging.
->>>>>>> d334e70d6a845794a5a3b993da5b3e547acc2c64
