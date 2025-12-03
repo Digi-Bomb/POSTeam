@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../api_service.dart';
 import 'ticket_screen.dart';
 import 'customer_pos_screen.dart';
 
@@ -21,6 +22,36 @@ class PaymentScreen extends StatefulWidget {
 class _PaymentScreenState extends State<PaymentScreen> {
   String? selectedPayment;
 
+  // ----------------------------------------------------------
+  // 🔥 COMPLETE PAYMENT: Log in backend + go to ticket screen
+  // ----------------------------------------------------------
+  void completePayment() async {
+    final success = await ApiService.logTransaction({
+      "customerName": widget.customerName,
+      "totalAmount": widget.totalAmount,
+      "paymentMethod": selectedPayment,
+      "items": widget.cartItems,
+    });
+
+    if (!success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Failed to log transaction")),
+      );
+    }
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TicketScreen(
+          customerName: widget.customerName,
+          totalAmount: widget.totalAmount,
+          cartItems: widget.cartItems,
+          paymentMethod: selectedPayment ?? "Unknown",
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,18 +72,21 @@ class _PaymentScreenState extends State<PaymentScreen> {
               ),
             ],
           ),
+
+          // ----------------------------------------------------------
+          //                    PAYMENT UI
+          // ----------------------------------------------------------
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
+              const Text(
                 "Payment Summary",
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 22,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-
               const SizedBox(height: 8),
 
               Text(
@@ -62,7 +96,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
               const SizedBox(height: 20),
 
-              // Order Summary Box
+              // ------------------ ORDER SUMMARY BOX ------------------
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
@@ -81,7 +115,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             style: const TextStyle(color: Colors.white, fontSize: 14),
                           ),
                           Text(
-                            "x${item['quantity']} \$${item['price'].toStringAsFixed(2)}",
+                            "x${item['quantity']}  \$${item['price'].toStringAsFixed(2)}",
                             style: const TextStyle(color: Colors.white70, fontSize: 14),
                           ),
                         ],
@@ -111,39 +145,18 @@ class _PaymentScreenState extends State<PaymentScreen> {
               ),
               const SizedBox(height: 8),
 
+              // ------------------ PAYMENT OPTIONS ------------------
               _paymentRadio("Cash", Icons.money),
               _paymentRadio("Card", Icons.credit_card),
               _paymentRadio("Digital Wallet", Icons.phone_android),
 
               const SizedBox(height: 12),
 
-              // Confirm Payment Button
+              // ------------------ CONFIRM PAYMENT ------------------
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: selectedPayment == null
-                      ? null
-                      : () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text("Payment Successful via $selectedPayment"),
-                              
-                            ),
-                            
-                          );
-
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => TicketScreen(
-                          customerName: widget.customerName,  // ✅ correct variable
-                          totalAmount: widget.totalAmount,
-                        ),
-                      ),
-                    );
-
-
-                        },
+                  onPressed: selectedPayment == null ? null : completePayment,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.purpleAccent,
                     disabledBackgroundColor: Colors.grey,
@@ -165,6 +178,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
+  // ----------------------------------------------------------
+  // RADIO TILE FOR PAYMENT OPTIONS
+  // ----------------------------------------------------------
   Widget _paymentRadio(String label, IconData icon) {
     return RadioListTile<String>(
       value: label,

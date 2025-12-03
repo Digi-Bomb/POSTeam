@@ -1,122 +1,93 @@
 from flask import Flask, request, jsonify
-import sys
-import os
 from datetime import datetime
-
-# Add src to path so we can import our modules
-sys.path.append(os.path.dirname(__file__))
+import json, os
 
 from pos_calculator import POSCalculator
 
-# Initialize Flask app and calculator
 app = Flask(__name__)
 calculator = POSCalculator()
 
+TRANSACTION_LOG = os.path.join("data", "transactions.json")
+
+
+# Utility — write to JSON log
+def append_transaction(entry):
+    try:
+        if not os.path.exists(TRANSACTION_LOG):
+            with open(TRANSACTION_LOG, "w") as f:
+                json.dump([], f)
+
+        with open(TRANSACTION_LOG, "r") as f:
+            existing = json.load(f)
+
+        existing.append(entry)
+
+        with open(TRANSACTION_LOG, "w") as f:
+            json.dump(existing, f, indent=4)
+
+        return True
+
+    except Exception as e:
+        print("Error writing log:", e)
+        return False
+
+
 @app.route('/health', methods=['GET'])
 def health_check():
-    """Health check endpoint"""
-    return jsonify({
-        "status": "healthy", 
-        "service": "POS Calculator",
-        "timestamp": datetime.now().isoformat(),
-        "version": "1.0.0"
-    })
+    return jsonify({"status": "healthy", "service": "POS", "time": datetime.now().isoformat()})
 
-@app.route('/calculate/order', methods=['POST'])
-def calculate_order():
-    """
-    Calculate order total
-    Expected JSON:
-    {
-        "items": [
-            {"id": "T1", "type": "ticket", "quantity": 2},
-            {"id": "TB1", "type": "bundle", "quantity": 1}
-        ],
-        "discount_percentage": 10  # optional
-    }
-    """
-    try:
-        data = request.get_json()
-        
-        if not data or 'items' not in data:
-            return jsonify({"status": "error", "message": "Missing items in request"}), 400
-        
-        result = calculator.process_order(data)
-        return jsonify(result)
-        
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 400
-
-@app.route('/validate/payment', methods=['POST'])
-def validate_payment():
-    """
-    Validate customer payment
-    Expected JSON:
-    {
-        "total_amount": 50.00,
-        "customer_balance": 75.00
-    }
-    """
-    try:
-        data = request.get_json()
-        total_amount = data.get("total_amount")
-        customer_balance = data.get("customer_balance")
-        
-        if total_amount is None or customer_balance is None:
-            return jsonify({"status": "error", "message": "Missing required fields"}), 400
-        
-        result = calculator.validate_payment(total_amount, customer_balance)
-        return jsonify(result)
-        
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 400
-
-@app.route('/calculate/discount', methods=['POST'])
-def calculate_discount():
-    """
-    Calculate discounted price
-    Expected JSON:
-    {
-        "original_price": 100.00,
-        "discount_percentage": 15
-    }
-    """
-    try:
-        data = request.get_json()
-        original_price = data.get("original_price")
-        discount_percentage = data.get("discount_percentage", 0)
-        
-        if original_price is None:
-            return jsonify({"status": "error", "message": "Missing original_price"}), 400
-        
-        discounted_price = calculator.apply_discount(original_price, discount_percentage)
-        
-        return jsonify({
-            "status": "success",
-            "original_price": original_price,
-            "discount_percentage": discount_percentage,
-            "discounted_price": discounted_price,
-            "amount_saved": round(original_price - discounted_price, 2)
-        })
-        
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 400
 
 @app.route('/get/products', methods=['GET'])
 def get_products():
-    """Get available tickets and token bundles"""
     return jsonify({
         "tickets": calculator.tickets,
         "token_bundles": calculator.token_bundles
     })
 
-if __name__ == '__main__':
-    print("🚀 Starting POS Calculator Service on port 12500...")
-    print("📊 Available endpoints:")
-    print("  GET  /health")
-    print("  POST /calculate/order")
-    print("  POST /validate/payment")
-    print("  POST /calculate/discount")
-    print("  GET  /get/products")
-    print("🔗 Server: http://localhost:12500")
-    app.run(host='0.0.0.0', port=12500, debug=True)
+
+@app.route('/calculate/order', methods=['POST'])
+def calculate_order():
+    data = request.get_json()
+    items = data.get("items", [])
+    subtotal = calculator.calculate_order_total(items)
+
+    return jsonify({
+        "total_price": subtotal,
+        "status": "success"
+    })
+
+
+@app.route('/validate/payment', methods=['POST'])
+def validate_payment():
+    data = request.get_json()
+    total = data.get("total_amount")
+    balance = data.get("customer_balance")
+
+    result = calculator.validate_payment(total, balance)
+    return jsonify(result)
+
+
+# 🚨 NEW: LOG TRANSACTION
+@app.route('/log/transaction', methods=['POST'])
+def log_transaction():
+    data = request.get_json()
+
+    entry = {
+        "customerName": data.get("customerName"),
+        "items": data.get("items"),     # list of {name, quantity, price}
+        "totalAmount": data.get("totalAmount"),
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "paymentMethod": data.get("paymentMethod", "Unknown")
+    }
+
+    success = append_transaction(entry)
+
+    if success:
+        return jsonify({"status": "success", "message": "Logged"})
+    else:
+        return jsonify({"status": "error", "message": "Failed to log"}), 500
+
+
+if __name__ == "__main__":
+    print("🔥 POS Backend Running on http://127.0.0.1:12500")
+    app.run(host="0.0.0.0", port=12500, debug=True)

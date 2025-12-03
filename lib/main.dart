@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:point_of_sale_2/screens/customer_pos_screen.dart';
+import '../screens/customer_pos_screen.dart';
 import 'screens/staff_login_screen.dart';
 
 void main() {

@@ -8,8 +8,8 @@
   },
 
   "tickets": [
-    { "id": "T1", "name": "Basic Ticket", "price": 5.00, "description": "General entry ticket" },
-    { "id": "T2", "name": "Premium Ticket", "price": 10.00, "description": "Entry + premium attractions" },
+    { "id": "Basic Tickit", "name": "Basic Ticket", "price": 5.00, "description": "General entry ticket" },
+    { "id": "Premium Tickit", "name": "Premium Ticket", "price": 10.00, "description": "Entry + premium attractions" },
     { "id": "T3", "name": "VIP Ticket", "price": 20.00, "description": "All-access VIP entry" }
   ],
 

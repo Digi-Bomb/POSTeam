@@ -3,12 +3,17 @@ import 'package:flutter/material.dart';
 class TicketScreen extends StatelessWidget {
   final String customerName;
   final double totalAmount;
+  final String paymentMethod;
+  final List<Map<String, dynamic>> cartItems;
 
   const TicketScreen({
     super.key,
     required this.customerName,
     required this.totalAmount,
+    required this.cartItems,
+    required this.paymentMethod,
   });
+
 
   String _formatDate(DateTime dt) {
     // yyyy-MM-dd
@@ -123,33 +128,29 @@ class TicketScreen extends StatelessWidget {
 
               // Placeholder area for purchase details + additional info
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text("Purchase Details:", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
-                  SizedBox(height: 8),
-                  Text("• Item / Bundle: ____________________", style: TextStyle(fontSize: 14)),
-                  SizedBox(height: 6),
-                  Text("• Quantity: __________________________", style: TextStyle(fontSize: 14)),
-                  SizedBox(height: 6),
-                  Text("• Tokens Issued: ____________________", style: TextStyle(fontSize: 14)),
-                  SizedBox(height: 6),
-                  Text("• Arcade Zone: ______________________", style: TextStyle(fontSize: 14)),
-                ],
-              ),
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    const Text("Purchase Details:",
+        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+    const SizedBox(height: 8),
+
+    ...cartItems.map((item) => Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("• Item: ${item['name']}", style: const TextStyle(fontSize: 14)),
+        Text("• Qty: ${item['quantity']}", style: const TextStyle(fontSize: 14)),
+        Text("• Price: \$${item['price'].toStringAsFixed(2)}",
+            style: const TextStyle(fontSize: 14)),
+        const SizedBox(height: 6),
+      ],
+    )),
+  ],
+),
+
 
               const SizedBox(height: 18),
 
-              // Additional information placeholder
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text("Additional Info:", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
-                  SizedBox(height: 8),
-                  Text("______________________________________", style: TextStyle(fontSize: 14)),
-                  SizedBox(height: 6),
-                  Text("______________________________________", style: TextStyle(fontSize: 14)),
-                ],
-              ),
+             
 
               const SizedBox(height: 20),
 

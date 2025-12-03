@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:point_of_sale_2/main.dart';
+import '../api_service.dart';
 import 'payment_screen.dart';
+import '../main.dart';
 
 class CustomerPOSScreen extends StatefulWidget {
   const CustomerPOSScreen({super.key});
@@ -10,240 +11,215 @@ class CustomerPOSScreen extends StatefulWidget {
 }
 
 class _CustomerPOSScreenState extends State<CustomerPOSScreen> {
+  // user input
   int quantity = 1;
   String? ticketType;
   String? tokenBundle;
   final TextEditingController _nameController = TextEditingController();
 
-  // Cart data stored here
+  // backend data
+  List<String> backendTickets = [];
+  List<String> backendBundles = [];
+
+  // cart
   List<Map<String, dynamic>> cartItems = [];
-  double totalPrice = 0.0;
+  double totalPriceAPI = 0.0;
+  double lastUnitPrice = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProducts();
+  }
+
+  // ---------------------------
+  // BACKEND: FETCH PRODUCT LIST
+  // ---------------------------
+  void fetchProducts() async {
+    final result = await ApiService.getProducts();
+
+    if (result != null) {
+      setState(() {
+      backendTickets =
+    (result["tickets"] as Map<String, dynamic>).keys.cast<String>().toList();
+
+backendBundles =
+    (result["token_bundles"] as Map<String, dynamic>).keys.cast<String>().toList();
+
+      });
+    }
+  }
+
+  // ---------------------------
+  // BACKEND: ADD ITEM TO CART
+  // ---------------------------
+  void addToCart() async {
+    if (ticketType == null && tokenBundle == null) return;
+
+    final selectedName = ticketType ?? tokenBundle;
+
+    final result = await ApiService.calculateOrder([
+      {
+        "id": selectedName,
+        "type": ticketType != null ? "ticket" : "bundle",
+        "quantity": quantity,
+      }
+    ]);
+
+    if (result == null) return;
+
+    final itemTotal = result["total_price"] ?? 0.0;
+    final unitPrice = itemTotal / quantity;
+
+    setState(() {
+      cartItems.add({
+        'name': selectedName,
+        'quantity': quantity,
+        'price': itemTotal,
+      });
+
+      lastUnitPrice = unitPrice;
+      totalPriceAPI += itemTotal;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1A082F), // dark purple background
+      backgroundColor: const Color(0xFF1A082F),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 40),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header Row (Top bar)
+            // HEADER
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  "Customer POS",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                const Text("Customer POS",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold)),
                 Row(
                   children: [
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
                       ),
                       onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                         MaterialPageRoute(builder: (context) => const POSApp()));
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const POSApp()),
+                        );
                       },
-                      child: const Text(
-                        "Back to Login",
-                        style: TextStyle(color: Colors.white, fontSize: 14),
-                      ),
+                      child: const Text("Back to Login",
+                          style:
+                              TextStyle(color: Colors.white, fontSize: 14)),
                     ),
                     const SizedBox(width: 10),
-                    CircleAvatar(
+                    const CircleAvatar(
                       backgroundColor: Colors.purpleAccent,
                       radius: 25,
-                      child: const Icon(Icons.pets,
-                          color: Colors.white, size: 28),
+                      child: Icon(Icons.pets, color: Colors.white, size: 28),
                     ),
                   ],
                 ),
               ],
             ),
 
-            const SizedBox(height: 10),
-            const Text(
-              "Place your arcade order",
-              style: TextStyle(
-                color: Colors.purpleAccent,
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-
             const SizedBox(height: 40),
 
-            // Main content row (Left: form, Right: cart)
             Expanded(
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // LEFT PANEL - Order Details
+                  // LEFT PANEL FORM
                   Expanded(
                     flex: 2,
                     child: Container(
                       padding: const EdgeInsets.all(25),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF2C1155),
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(color: Colors.purple.shade200),
-                      ),
+                      decoration: _boxDecoration(),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            "Order Details",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          const Text("Order Details",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold)),
                           const SizedBox(height: 20),
 
-                          _buildTextField("Customer Name", "Enter your name",
-                              _nameController),
+                          _buildTextField(
+                              "Customer Name", "Enter your name"),
 
                           const SizedBox(height: 15),
+
                           _buildDropdown(
                             label: "Ticket Type",
                             value: ticketType,
-                            items: const [
-                              "Basic Ticket",
-                              "Premium Ticket",
-                              "VIP Ticket"
-                            ],
+                            items: backendTickets,
                             onChanged: (val) =>
                                 setState(() => ticketType = val),
                           ),
 
                           const SizedBox(height: 15),
+
                           _buildDropdown(
                             label: "Token Bundle",
                             value: tokenBundle,
-                            items: const [
-                              "Small Token Bundle",
-                              "Medium Token Bundle",
-                              "Large Token Bundle"
-                            ],
+                            items: backendBundles,
                             onChanged: (val) =>
                                 setState(() => tokenBundle = val),
                           ),
 
                           const SizedBox(height: 15),
-                          const Text(
-                            "Quantity",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600),
-                          ),
+
+                          const Text("Quantity",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600)),
                           const SizedBox(height: 10),
+
                           Row(
                             children: [
-                              _quantityButton("-", () {
-                                if (quantity > 1) setState(() => quantity--);
+                              _qtyButton("-", () {
+                                if (quantity > 1) {
+                                  setState(() => quantity--);
+                                }
                               }),
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 20, vertical: 8),
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: Colors.purple.shade300),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  "$quantity",
-                                  style: const TextStyle(
-                                      color: Colors.white, fontSize: 16),
-                                ),
+                                decoration: _borderBox(),
+                                child: Text("$quantity",
+                                    style: const TextStyle(
+                                        color: Colors.white, fontSize: 16)),
                               ),
-                              _quantityButton("+", () {
+                              _qtyButton("+", () {
                                 setState(() => quantity++);
                               }),
                             ],
                           ),
 
                           const SizedBox(height: 30),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    if (ticketType != null ||
-                                        tokenBundle != null) {
-                                      setState(() {
-                                        final selectedItem = {
-                                          'name': ticketType ?? tokenBundle,
-                                          'quantity': quantity,
-                                          'price': _calculatePrice(
-                                              ticketType ?? tokenBundle,
-                                              quantity),
-                                        };
-                                        cartItems.add(selectedItem);
-                                        totalPrice = cartItems.fold(
-                                            0.0,
-                                            (sum, item) =>
-                                                sum + item['price']);
-                                      });
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.purpleAccent,
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 16),
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                  ),
-                                  child: const Text(
-                                    "Add to Cart",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                ),
+
+                          // ADD TO CART BUTTON
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: addToCart,
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.purpleAccent,
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 16)),
+                              child: const Text(
+                                "Add to Cart",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600),
                               ),
-                              const SizedBox(width: 15),
-                              Expanded(
-                                child: OutlinedButton(
-                                  onPressed: () {
-                                    _nameController.clear();
-                                    setState(() {
-                                      ticketType = null;
-                                      tokenBundle = null;
-                                      quantity = 1;
-                                    });
-                                  },
-                                  style: OutlinedButton.styleFrom(
-                                    side: const BorderSide(
-                                        color: Colors.purpleAccent),
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 16),
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                  ),
-                                  child: const Text(
-                                    "Clear Selection",
-                                    style: TextStyle(
-                                        color: Colors.purpleAccent,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ],
                       ),
@@ -252,7 +228,7 @@ class _CustomerPOSScreenState extends State<CustomerPOSScreen> {
 
                   const SizedBox(width: 30),
 
-                  // RIGHT PANEL - Cart Preview
+                  // RIGHT PANEL CART
                   Expanded(
                     flex: 1,
                     child: Column(
@@ -260,162 +236,116 @@ class _CustomerPOSScreenState extends State<CustomerPOSScreen> {
                         Expanded(
                           child: Container(
                             padding: const EdgeInsets.all(25),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF2C1155),
-                              borderRadius: BorderRadius.circular(15),
-                              border:
-                                  Border.all(color: Colors.purple.shade200),
-                            ),
+                            decoration: _boxDecoration(),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Row(
-                                  children: [
-                                    Icon(Icons.shopping_cart_outlined,
-                                        color: Colors.white),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      "Cart Preview",
-                                      style: TextStyle(
+                                const Text("Cart Preview",
+                                    style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 20),
+                                        fontWeight: FontWeight.bold)),
+                                const SizedBox(height: 15),
 
-                                // 🛒 Dynamic cart display
                                 Expanded(
                                   child: cartItems.isEmpty
                                       ? const Center(
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Icon(Icons.shopping_cart,
-                                                  color: Colors.purpleAccent,
-                                                  size: 60),
-                                              SizedBox(height: 10),
-                                              Text("Your Cart is Empty",
-                                                  style: TextStyle(
-                                                      color: Colors.grey,
-                                                      fontSize: 16)),
-                                            ],
-                                          ),
-                                        )
+                                          child: Text("Cart Empty",
+                                              style: TextStyle(
+                                                  color: Colors.grey)))
                                       : ListView.builder(
                                           itemCount: cartItems.length,
-                                          itemBuilder: (context, index) {
-                                            final item = cartItems[index];
+                                          itemBuilder: (context, i) {
+                                            final item = cartItems[i];
                                             return ListTile(
-                                              title: Text(item['name'],
+                                              title: Text("${item['name']}",
                                                   style: const TextStyle(
                                                       color: Colors.white)),
                                               subtitle: Text(
                                                   "Qty: ${item['quantity']} | \$${item['price'].toStringAsFixed(2)}",
                                                   style: const TextStyle(
-                                                      color: Colors.white70)),
+                                                      color:
+                                                          Colors.white70)),
                                               trailing: IconButton(
                                                 icon: const Icon(Icons.delete,
-                                                    color: Colors.redAccent),
+                                                    color: Colors.red),
                                                 onPressed: () {
                                                   setState(() {
-                                                    totalPrice -=
+                                                    totalPriceAPI -=
                                                         item['price'];
-                                                    cartItems.removeAt(index);
+                                                    cartItems.removeAt(i);
                                                   });
                                                 },
                                               ),
                                             );
-                                          },
-                                        ),
+                                          }),
                                 ),
                               ],
                             ),
                           ),
                         ),
+
                         const SizedBox(height: 20),
-                       Container(
-  width: double.infinity,
-  padding: const EdgeInsets.all(25),
-  decoration: BoxDecoration(
-    color: const Color(0xFF2C1155),
-    borderRadius: BorderRadius.circular(15),
-    border: Border.all(color: Colors.purple.shade200),
-  ),
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        "Items in Cart: ${cartItems.length}",
-        style: const TextStyle(color: Colors.white, fontSize: 16),
-      ),
-      SizedBox(height: 10),
-      Text(
-        "Total: \$${totalPrice.toStringAsFixed(2)}",
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    ],
-  ),
-),
-const SizedBox(height: 15),
 
-SizedBox(
-  width: double.infinity,
-  child: ElevatedButton.icon(
-    onPressed: () {
-      if (cartItems.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Cart is empty. Add items before payment."),
-          ),
-        );
-        return;
-      }
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(25),
+                          decoration: _boxDecoration(),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Items: ${cartItems.length}",
+                                  style: const TextStyle(
+                                      color: Colors.white)),
+                              Text(
+                                "Total: \$${totalPriceAPI.toStringAsFixed(2)}",
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
 
-     Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) => PaymentScreen(
-      totalAmount: totalPrice,
-      customerName: _nameController.text,
-      cartItems: cartItems,
-    ),
-  ),
-);
+                        const SizedBox(height: 15),
 
-    },
-    icon: const Icon(Icons.payment),
-    label: const Text(
-      "Proceed to Payment",
-      style: TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 16,
-      ),
-    ),
-    style: ElevatedButton.styleFrom(
-      backgroundColor: Colors.greenAccent,
-      foregroundColor: Colors.black,
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-    ),
-  ),
-),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            icon: const Icon(Icons.payment),
+                            label: const Text("Proceed to Payment"),
+                            onPressed: () {
+                              if (cartItems.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text("Cart is empty")),
+                                );
+                                return;
+                              }
 
-                      
-                        
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => PaymentScreen(
+                                    totalAmount: totalPriceAPI,
+                                    customerName: _nameController.text,
+                                    cartItems: cartItems,
+                                  ),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.greenAccent,
+                              foregroundColor: Colors.black,
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 14),
+                            ),
+                          ),
+                        )
                       ],
-
-                      
                     ),
-                  ),
+                  )
                 ],
               ),
             ),
@@ -425,9 +355,38 @@ SizedBox(
     );
   }
 
-  // Helper Widgets and Methods
-  Widget _buildTextField(
-      String label, String hint, TextEditingController controller) {
+  // ---------------------------------------------------------------------------
+  // UI HELPERS
+  // ---------------------------------------------------------------------------
+
+  BoxDecoration _boxDecoration() {
+    return BoxDecoration(
+      color: const Color(0xFF2C1155),
+      borderRadius: BorderRadius.circular(15),
+      border: Border.all(color: Colors.purple.shade200),
+    );
+  }
+
+  BoxDecoration _borderBox() {
+    return BoxDecoration(
+      border: Border.all(color: Colors.purple.shade300),
+      borderRadius: BorderRadius.circular(8),
+    );
+  }
+
+  Widget _qtyButton(String text, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: _borderBox(),
+        child: Text(text,
+            style: const TextStyle(color: Colors.white, fontSize: 18)),
+      ),
+    );
+  }
+
+  Widget _buildTextField(String label, String hint) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -435,22 +394,15 @@ SizedBox(
             style: const TextStyle(color: Colors.white, fontSize: 16)),
         const SizedBox(height: 8),
         TextField(
-          controller: controller,
+          controller: _nameController,
           style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: const TextStyle(color: Colors.white54),
             filled: true,
             fillColor: const Color(0xFF140634),
-            enabledBorder: OutlineInputBorder(
+            border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide:
-                  BorderSide(color: Colors.purple.shade200, width: 1.0),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide:
-                  BorderSide(color: Colors.purpleAccent, width: 1.2),
             ),
           ),
         ),
@@ -472,68 +424,22 @@ SizedBox(
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
           value: value,
-          dropdownColor: const Color(0xFF1A082F),
           items: items
               .map((item) =>
                   DropdownMenuItem(value: item, child: Text(item)))
               .toList(),
           onChanged: onChanged,
+          dropdownColor: const Color(0xFF1A082F),
+          style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
             filled: true,
             fillColor: const Color(0xFF140634),
-            enabledBorder: OutlineInputBorder(
+            border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide:
-                  BorderSide(color: Colors.purple.shade200, width: 1.0),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide:
-                  BorderSide(color: Colors.purpleAccent, width: 1.2),
             ),
           ),
-          style: const TextStyle(color: Colors.white),
         ),
       ],
     );
-  }
-
-  Widget _quantityButton(String text, VoidCallback onTap) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5),
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.purpleAccent),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          child: Text(
-            text,
-            style: const TextStyle(color: Colors.white, fontSize: 18),
-          ),
-        ),
-      ),
-    );
-  }
-
-  double _calculatePrice(String? item, int qty) {
-    switch (item) {
-      case "Basic Ticket":
-        return 5.0 * qty;
-      case "Premium Ticket":
-        return 10.0 * qty;
-      case "VIP Ticket":
-        return 20.0 * qty;
-      case "Small Token Bundle":
-        return 8.0 * qty;
-      case "Medium Token Bundle":
-        return 15.0 * qty;
-      case "Large Token Bundle":
-        return 25.0 * qty;
-      default:
-        return 0.0;
-    }
   }
 }
