@@ -1,23 +1,10 @@
-version: "3.9"
+version: '3.8'
 
 services:
-  jenkins:
-    image: jenkins/jenkins:lts
-    container_name: jenkins
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "8080:8080"
-    volumes:
-      - jenkins_home:/var/jenkins_home
-
-  ngrok:
-    image: wernight/ngrok
-    container_name: ngrok
-    environment:
-      NGROK_AUTHTOKEN: <your-ngrok-token>
-      NGROK_PORT: jenkins:8080
-    depends_on:
-      - jenkins
+      - "13000:12500"   # expose container port 13000 to host port 12500
     restart: unless-stopped
-
-volumes:
-  jenkins_home:
