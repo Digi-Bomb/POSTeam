@@ -6,5 +6,5 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "13000:12500"   # expose container port 13000 to host port 12500
+      - "12500:12500"   # expose container port 13000 to host port 12500
     restart: unless-stopped
