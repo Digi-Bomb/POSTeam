@@ -5,7 +5,7 @@ services:
     image: jenkins/jenkins:lts
     container_name: jenkins
     ports:
-      - "8080:8080"
+      - "12500:12500"
     volumes:
       - jenkins_home:/var/jenkins_home
 
@@ -14,7 +14,7 @@ services:
     container_name: ngrok
     environment:
       NGROK_AUTHTOKEN: <your-ngrok-token>
-      NGROK_PORT: jenkins:8080
+      NGROK_PORT: jenkins:12500
     depends_on:
       - jenkins
     restart: unless-stopped
