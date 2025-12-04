@@ -8,5 +8,3 @@ services:
     ports:
       - "12500:12500"   # expose container port 80 to host port 12500
     restart: unless-stopped
-volumes:
-  jenkins_home:
